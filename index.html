@@ -2,13 +2,13 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Mascota Virtual</title>
+<title>Mascota Virtual ASCII</title>
 
 <style>
 body{
-    font-family: Arial;
+    font-family: monospace;
     text-align:center;
-    background:#f0f8ff;
+    background:#f4f9ff;
 }
 button{
     padding:12px 20px;
@@ -19,17 +19,23 @@ button{
     margin-top:20px;
     white-space:pre-line;
 }
+#dog{
+    white-space:pre;
+    font-size:16px;
+    margin-top:20px;
+}
 </style>
 </head>
 <body>
 
-<h1>🐶 Mascota Virtual</h1>
+<h1>Mascota Virtual</h1>
 
 <button onclick="iniciarPartida()">Iniciar Partida</button>
 
 <h2 id="energia"></h2>
 <h3 id="record"></h3>
 
+<div id="dog"></div>
 <div id="log"></div>
 
 <script>
@@ -46,18 +52,20 @@ class Mascota{
             this.energia = 0;
             this.estaBien = false;
             agregarLog(this.nombre + " se ha quedado sin energía...");
+            mostrarPerroMuerto();
+            finalizarPartida();
         }
     }
 
     comer(){
         this.energia += 300;
-        agregarLog(this.nombre + " ha comido. Energía: " + this.energia);
+        agregarLog(this.nombre + " ha comido.");
     }
 
     caminar(){
         if(this.energia >= 200){
             this.energia -= 200;
-            agregarLog(this.nombre + " caminó. Energía: " + this.energia);
+            agregarLog(this.nombre + " caminó.");
         }else{
             agregarLog(this.nombre + " no tiene suficiente energía.");
         }
@@ -67,23 +75,28 @@ class Mascota{
     enfermarse(){
         let perdida = Math.floor(Math.random()*1001);
         this.energia -= perdida;
-        agregarLog(this.nombre + " se enfermó y perdió " + perdida + 
-        ". Energía: " + this.energia);
+        agregarLog(this.nombre + " se enfermó y perdió " + perdida);
         this.chequearEnergia();
     }
 
     descansar(){
         let ganancia = Math.floor(Math.random()*501);
         this.energia += ganancia;
-        agregarLog(this.nombre + " descansó y ganó " + ganancia + 
-        ". Energía: " + this.energia);
+        agregarLog(this.nombre + " descansó y ganó " + ganancia);
         this.chequearEnergia();
     }
 }
 
 class Perro extends Mascota{
     ladrar(){
-        agregarLog(this.nombre + " dice: ¡Guau! ¡Guau!");
+        if(this.estaBien){
+            agregarLog(this.nombre + " dice: ¡Guau! ¡Guau!");
+            mostrarPerroNormal();
+        }else{
+            agregarLog(this.nombre + " está demasiado débil para ladrar.");
+            mostrarPerroMuerto();
+            finalizarPartida();
+        }
     }
 }
 
@@ -91,7 +104,7 @@ let miPerro;
 let intervalo;
 let record = localStorage.getItem("recordEnergia") || 1000;
 
-document.getElementById("record").innerText = 
+document.getElementById("record").innerText =
 "Récord de energía: " + record;
 
 function agregarLog(texto){
@@ -107,16 +120,42 @@ function agregarLog(texto){
     }
 }
 
+function mostrarPerroNormal(){
+document.getElementById("dog").innerText = `
+  / \\__
+ (    @\\___
+ /         O
+/   (_____/
+/_____/   U
+`;
+}
+
+function mostrarPerroMuerto(){
+document.getElementById("dog").innerText = `
+  / \\__
+ (    >\\___
+ /         _
+/   (_____/
+/_____/   U
+`;
+}
+
+function finalizarPartida(){
+    clearInterval(intervalo);
+    agregarLog("La partida ha terminado.");
+}
+
 function iniciarPartida(){
 
     document.getElementById("log").innerText = "";
     miPerro = new Perro("Hope");
+    mostrarPerroNormal();
 
     agregarLog("Estado inicial: 1000 de energía.");
 
     let c = 0;
     let d = 0;
-    let b = Math.floor(Math.random()*11) + 5; // 5 a 15 acciones
+    let b = Math.floor(Math.random()*11) + 5;
     let contador = 0;
 
     clearInterval(intervalo);
@@ -124,7 +163,6 @@ function iniciarPartida(){
     intervalo = setInterval(() => {
 
         if(contador >= b || !miPerro.estaBien){
-            clearInterval(intervalo);
             miPerro.ladrar();
             return;
         }
@@ -153,7 +191,7 @@ function iniciarPartida(){
 
         contador++;
 
-    }, 1500); // 1.5 segundos entre acciones
+    }, 1500);
 }
 
 </script>
