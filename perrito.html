@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Juego Mascota Virtual</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #e3f2fd;
+      padding: 20px;
+    }
+    h1 {
+      color: #1565c0;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #energia {
+      font-size: 20px;
+      margin: 15px 0;
+    }
+    #mensaje {
+      font-size: 18px;
+      color: #333;
+      min-height: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Mascota Virtual 🐾</h1>
+  <div id="energia"></div>
+  <div id="mensaje">Haz clic en un botón para empezar.</div>
+
+  <div>
+    <button onclick="ladrar()">Ladrar</button>
+    <button onclick="caminar()">Caminar</button>
+    <button onclick="comer()">Comer</button>
+    <button onclick="descansar()">Descansar</button>
+    <button onclick="enfermarse()">Enfermarse</button>
+  </div>
+
+  <script>
+    class Mascota {
+      constructor(nombre) {
+        this.nombre = nombre;
+        this.energia = 1000;
+        this.estaBien = true;
+      }
+
+      actualizarPantalla(mensaje) {
+        document.getElementById("energia").textContent =
+          `Energía de ${this.nombre}: ${this.energia}`;
+        document.getElementById("mensaje").textContent = mensaje;
+      }
+
+      comer() {
+        if (this.estaBien) {
+          this.energia += 300;
+          this.actualizarPantalla(`${this.nombre} ha comido. +300 de energía.`);
+        }
+      }
+
+      caminar() {
+        if (this.estaBien) {
+          if (this.energia >= 200) {
+            this.energia -= 200;
+            this.actualizarPantalla(`${this.nombre} caminó. -200 de energía.`);
+          } else {
+            this.actualizarPantalla(`${this.nombre} no tiene suficiente energía para caminar.`);
+          }
+          this.chequearEnergia();
+        }
+      }
+
+      enfermarse() {
+        if (this.estaBien) {
+          const perdida = Math.floor(Math.random() * 1001);
+          this.energia -= perdida;
+          this.actualizarPantalla(`${this.nombre} se enfermó y perdió ${perdida} de energía.`);
+          this.chequearEnergia();
+        }
+      }
+
+      descansar() {
+        if (this.estaBien) {
+          const ganancia = Math.floor(Math.random() * 501);
+          this.energia += ganancia;
+          this.actualizarPantalla(`${this.nombre} descansó y recuperó ${ganancia} de energía.`);
+          this.chequearEnergia();
+        }
+      }
+
+      chequearEnergia() {
+        if (this.energia <= 0) {
+          this.energia = 0;
+          this.estaBien = false;
+          this.actualizarPantalla(`${this.nombre} se ha quedado sin energía... 💀`);
+        }
+      }
+    }
+
+    class Perro extends Mascota {
+      ladrar() {
+        if (this.estaBien) {
+          this.actualizarPantalla(`${this.nombre} dice: ¡Guau! ¡Guau! 🐶`);
+        } else {
+          this.actualizarPantalla(`${this.nombre} está demasiado débil para ladrar.`);
+        }
+      }
+    }
+
+    const miPerro = new Perro("Hope");
+    miPerro.actualizarPantalla("Estado inicial: 1000 de energía.");
+
+    // Funciones conectadas a botones
+    function ladrar() { miPerro.ladrar(); }
+    function caminar() { miPerro.caminar(); }
+    function comer() { miPerro.comer(); }
+    function descansar() { miPerro.descansar(); }
+    function enfermarse() { miPerro.enfermarse(); }
+  </script>
+
+</body>
+</html>
